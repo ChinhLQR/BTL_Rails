@@ -4,7 +4,7 @@ class ArticlesController < ApplicationController
     before_action :require_same_user, only: [:edit,:update,:destroy]
     
     def index
-        @articles = Article.where('title LIKE ?', '%filler%').paginate(page: params[:page],per_page:5)
+        @articles = Article.order(id: :DESC).where('title LIKE ?', '%filler%').paginate(page: params[:page],per_page:5)
     end
     
     
@@ -57,7 +57,7 @@ class ArticlesController < ApplicationController
         params.require(:article).permit(:title,:description)
     end
     def require_same_user
-        if current_user != @article.user
+        if current_user != @article.user and !current_user.admin?
             flash[:danger] = "you can only edit or delete your articles"
             redirect_to root_path
         end
